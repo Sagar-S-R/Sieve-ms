@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: edge-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: task-query-service
+          uri: lb://task-query-service
+          predicates:
+            - Path=/api/tasks/**
+        - id: reminder-service
+          uri: lb://reminder-service
+          predicates:
+            - Path=/api/reminders/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+
+demo:
+  username: ${DEMO_USERNAME:demo}
+  password: ${DEMO_PASSWORD:demo}
+
+jwt:
+  secret: ${JWT_SECRET:sieve-demo-jwt-secret-change-me-32chars}

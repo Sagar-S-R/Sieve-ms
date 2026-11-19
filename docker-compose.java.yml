@@ -1,0 +1,133 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: sieve
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - sieve_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d sieve"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - java-network
+
+  reminder_postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: reminder_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - reminder_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d reminder_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - java-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    networks:
+      - java-network
+
+  eureka-server:
+    build:
+      context: ./java-services/eureka-server
+      dockerfile: Dockerfile
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - java-network
+
+  task-query-service:
+    build:
+      context: ./java-services/task-query-service
+      dockerfile: Dockerfile
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/sieve
+      DB_USER: user
+      DB_PASSWORD: password
+      EUREKA_URL: http://eureka-server:8761/eureka
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+    networks:
+      - java-network
+
+  reminder-service:
+    build:
+      context: ./java-services/reminder-service
+      dockerfile: Dockerfile
+    environment:
+      REMINDER_DB_URL: jdbc:postgresql://reminder_postgres:5432/reminder_db
+      REMINDER_DB_USER: user
+      REMINDER_DB_PASSWORD: password
+      EUREKA_URL: http://eureka-server:8761/eureka
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+      REMINDER_DRY_RUN: "true"
+    ports:
+      - "8082:8082"
+    depends_on:
+      reminder_postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+      task-query-service:
+        condition: service_started
+    networks:
+      - java-network
+
+  edge-gateway:
+    build:
+      context: ./java-services/edge-gateway
+      dockerfile: Dockerfile
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka
+      JWT_SECRET: ${JWT_SECRET:-sieve-demo-jwt-secret-change-me-32chars}
+      DEMO_USERNAME: ${DEMO_USERNAME:-demo}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-demo}
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka-server:
+        condition: service_started
+    networks:
+      - java-network
+
+networks:
+  java-network:
+    driver: bridge
+
+volumes:
+  sieve_postgres_data:
+  reminder_postgres_data:

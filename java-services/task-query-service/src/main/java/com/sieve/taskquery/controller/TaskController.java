@@ -1,6 +1,5 @@
 package com.sieve.taskquery.controller;
 
-import com.sieve.taskquery.dto.ReminderLevelUpdateRequest;
 import com.sieve.taskquery.dto.ReminderCandidateResponse;
 import com.sieve.taskquery.dto.TaskResponse;
 import com.sieve.taskquery.dto.TaskStatsResponse;
@@ -10,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,14 +59,6 @@ public class TaskController {
     public List<ReminderCandidateResponse> reminderCandidates(
             @RequestParam(defaultValue = "0") int hours) {
         return taskQueryService.reminderCandidates(hours);
-    }
-
-    @PatchMapping("/{id}/reminder-level")
-    @Operation(summary = "Set a task reminder level")
-    public TaskResponse updateReminderLevel(
-            @PathVariable Long id,
-            @Valid @RequestBody ReminderLevelUpdateRequest request) {
-        return taskQueryService.updateReminderLevel(id, request.level());
     }
 
     @GetMapping("/stats")

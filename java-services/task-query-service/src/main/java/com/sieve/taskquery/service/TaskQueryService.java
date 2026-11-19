@@ -93,17 +93,6 @@ public class TaskQueryService {
     }
 
     @TimedExecution
-    @Transactional
-    public TaskResponse updateReminderLevel(Long id, int level) {
-        if (level < 0 || level > 3) {
-            throw new IllegalArgumentException("reminder level must be between 0 and 3");
-        }
-        Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
-        task.setReminderLevel(level);
-        return TaskResponse.from(taskRepository.save(task));
-    }
-
-    @TimedExecution
     @Transactional(readOnly = true)
     public TaskStatsResponse stats() {
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);

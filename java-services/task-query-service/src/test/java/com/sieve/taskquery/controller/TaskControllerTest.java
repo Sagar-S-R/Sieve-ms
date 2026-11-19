@@ -31,12 +31,4 @@ class TaskControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void returnsBadRequestForInvalidReminderLevel() throws Exception {
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-                        .patch("/api/tasks/1/reminder-level")
-                        .contentType("application/json")
-                        .content("{\"level\": 9}"))
-                .andExpect(status().isBadRequest());
-    }
 }

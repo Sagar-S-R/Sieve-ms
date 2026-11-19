@@ -1,2 +1,3 @@
 com\sieve\taskquery\controller\TaskControllerTest.class
+com\sieve\taskquery\event\ReminderEventListenerTest.class
 com\sieve\taskquery\service\TaskQueryServiceTest.class

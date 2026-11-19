@@ -4,6 +4,23 @@ server:
 spring:
   application:
     name: reminder-service
+  rabbitmq:
+    host: ${RABBITMQ_HOST:rabbitmq}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+  datasource:
+    url: ${REMINDER_DB_URL:jdbc:postgresql://localhost:5435/reminder_db}
+    username: ${REMINDER_DB_USER:user}
+    password: ${REMINDER_DB_PASSWORD:password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
 
 eureka:
   client:
@@ -13,6 +30,26 @@ eureka:
 reminder:
   interval-ms: ${REMINDER_INTERVAL_MS:60000}
   dry-run: ${REMINDER_DRY_RUN:true}
+
+spring.cloud.openfeign:
+  client:
+    config:
+      task-query-service:
+        connect-timeout: 2000
+        read-timeout: 2000
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      task-query-service:
+        sliding-window-size: 5
+        minimum-number-of-calls: 3
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+  timelimiter:
+    instances:
+      task-query-service:
+        timeout-duration: 2s
 
 logging:
   level:

@@ -48,15 +48,4 @@ class TaskQueryServiceTest {
         assertThrows(TaskNotFoundException.class, () -> taskQueryService.findById(7L));
     }
 
-    @Test
-    void updatesReminderLevel() {
-        Task task = new Task();
-        when(taskRepository.findById(7L)).thenReturn(Optional.of(task));
-        when(taskRepository.save(task)).thenReturn(task);
-
-        taskQueryService.updateReminderLevel(7L, 1);
-
-        verify(taskRepository).save(task);
-        assertEquals(1, task.getReminderLevel());
-    }
 }

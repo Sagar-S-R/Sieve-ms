@@ -1,5 +1,6 @@
 com\sieve\taskquery\aspect\ServiceLoggingAspect.class
 com\sieve\taskquery\annotation\TimedExecution.class
+com\sieve\taskquery\event\ReminderEventListener.class
 com\sieve\taskquery\controller\GlobalExceptionHandler.class
 com\sieve\taskquery\service\TaskNotFoundException.class
 com\sieve\taskquery\annotation\AuditedService.class
@@ -7,8 +8,8 @@ com\sieve\taskquery\TaskQueryServiceApplication.class
 com\sieve\taskquery\repository\TaskRepository.class
 com\sieve\taskquery\dto\TaskResponse.class
 com\sieve\taskquery\repository\GroupSubscriptionRepository.class
-com\sieve\taskquery\dto\ReminderLevelUpdateRequest.class
 com\sieve\taskquery\entity\GroupSubscription.class
+com\sieve\taskquery\dto\ReminderSentEvent.class
 com\sieve\taskquery\dto\TaskStatsResponse.class
 com\sieve\taskquery\entity\Task.class
 com\sieve\taskquery\dto\ReminderCandidateResponse.class

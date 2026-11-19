@@ -561,7 +561,7 @@ export default function Page() {
               <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-green-600 to-blue-600 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top"></div>
               <h3 className="text-xl font-medium mb-4">Production-Ready</h3>
               <p className="text-gray-600 leading-relaxed">
-                Kubernetes deployment with auto-scaling. Prometheus and Grafana monitoring.
+                Docker Compose deployment with containerized services.
                 Automated backups and disaster recovery. 99.9% uptime target.
               </p>
             </div>
@@ -713,7 +713,7 @@ export default function Page() {
                   Deployment
                 </text>
                 <text x="1010" y="188" textAnchor="middle" fill="#16a34a" fontSize="11">
-                  Kubernetes
+                  Docker Compose
                 </text>
                 <text x="1010" y="203" textAnchor="middle" fill="#16a34a" fontSize="11">
                   Auto-scaling
@@ -771,7 +771,7 @@ export default function Page() {
               <div className="h-1 w-12 bg-gradient-to-r from-blue-600 to-cyan-600 mb-6"></div>
               <h3 className="text-lg font-medium mb-3">High Availability</h3>
               <p className="text-gray-600 leading-relaxed text-sm">
-                Deployed on Kubernetes with auto-scaling. Multiple replicas of each service ensure zero downtime.
+                Deployed with Docker Compose. Multiple replicas of stateless services improve availability.
                 99.9% uptime SLA with automated failover.
               </p>
             </div>
@@ -800,7 +800,7 @@ export default function Page() {
             <ul className="space-y-3 text-gray-700">
               <li className="flex gap-3">
                 <span className="text-blue-600 font-bold">→</span>
-                <span><strong>Scalability:</strong> Microservices and Kubernetes allow us to scale individual components independently based on demand.</span>
+                <span><strong>Scalability:</strong> Microservices allow us to scale individual components independently based on demand.</span>
               </li>
               <li className="flex gap-3">
                 <span className="text-blue-600 font-bold">→</span>

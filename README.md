@@ -362,7 +362,7 @@ VALUES (123456, 123456, 'Test Personal Task', 'Complete testing', NOW() + INTERV
 | API Gateway latency | < 50ms |
 | Message processing | < 2s (text), < 5s (media) |
 | Reminder check interval | 60s |
-| Concurrent workers | 2-10 pods via K8s HPA, 10 concurrent messages per pod (aio_pika prefetch) |
+| Concurrent workers | Configurable Docker Compose worker replicas, 10 concurrent messages per pod |
 | Database connections | 10 per service |
 
 ## Security
@@ -375,6 +375,77 @@ VALUES (123456, 123456, 'Test Personal Task', 'Complete testing', NOW() + INTERV
 - SQL injection prevention (parameterized queries)
 - Message deduplication to prevent replay attacks
 - Database transactions for ACID compliance
+
+## Java Microservices Rubric Mapping
+
+| Requirement | Implementation |
+|---|---|
+| Per-service database | [`task-query-service`](./java-services/task-query-service) uses `sieve`; [`reminder-service`](./java-services/reminder-service) uses `reminder_db` and [`ReminderLog`](./java-services/reminder-service/src/main/java/com/sieve/reminder/entity/ReminderLog.java) |
+| Async reminder event | [`ReminderSentEvent`](./java-services/reminder-service/src/main/java/com/sieve/reminder/dto/ReminderSentEvent.java) is published to `reminder.events`; [`ReminderEventListener`](./java-services/task-query-service/src/main/java/com/sieve/taskquery/event/ReminderEventListener.java) updates the task level |
+| Synchronous discovery call | [`TaskQueryClient`](./java-services/reminder-service/src/main/java/com/sieve/reminder/client/TaskQueryClient.java) fetches reminder candidates through Eureka |
+| Resilience | [`TaskQueryGateway`](./java-services/reminder-service/src/main/java/com/sieve/reminder/service/TaskQueryGateway.java) applies Resilience4j timeout/circuit breaker and fallback |
+| Security gateway | [`edge-gateway`](./java-services/edge-gateway) routes through Eureka and validates HS256 JWT bearer headers |
+| Service discovery | Eureka server, `lb://task-query-service`, and `lb://reminder-service` |
+
+## Java Microservices Demo
+
+Start the Java stack:
+
+```powershell
+docker compose -f docker-compose.java.yml up --build
+```
+
+Login and capture the demo JWT:
+
+```powershell
+$login = Invoke-RestMethod -Method Post `
+  -Uri http://localhost:8080/auth/login `
+  -ContentType "application/json" `
+  -Body '{"username":"demo","password":"demo"}'
+
+$token = $login.token
+```
+
+Call protected routes:
+
+```powershell
+Invoke-RestMethod -Headers @{ Authorization = "Bearer $token" } `
+  -Uri http://localhost:8080/api/tasks
+
+Invoke-RestMethod -Method Post `
+  -Headers @{ Authorization = "Bearer $token" } `
+  -Uri http://localhost:8080/api/reminders/run
+
+Invoke-RestMethod -Headers @{ Authorization = "Bearer $token" } `
+  -Uri http://localhost:8080/api/reminders/log
+```
+
+Verify auth failures:
+
+```powershell
+Invoke-WebRequest -Uri http://localhost:8080/api/tasks
+Invoke-WebRequest -Headers @{ Authorization = "Bearer invalid" } `
+  -Uri http://localhost:8080/api/tasks
+```
+
+Demonstrate the Task Query outage fallback:
+
+```powershell
+docker compose -f docker-compose.java.yml stop task-query-service
+
+$fallback = Invoke-RestMethod -Method Post `
+  -Headers @{ Authorization = "Bearer $token" } `
+  -Uri http://localhost:8080/api/reminders/run
+$fallback
+
+# This independent endpoint remains available.
+Invoke-RestMethod -Headers @{ Authorization = "Bearer $token" } `
+  -Uri http://localhost:8080/api/reminders/log
+
+docker compose -f docker-compose.java.yml start task-query-service
+```
+
+The fallback run call should return HTTP `503` with `query service unavailable`. The reminder log call should still return HTTP `200`.
 
 ## Troubleshooting
 

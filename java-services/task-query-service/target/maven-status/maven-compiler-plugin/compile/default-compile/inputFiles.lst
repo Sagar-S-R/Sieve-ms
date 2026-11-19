@@ -1,7 +1,7 @@
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\entity\GroupSubscription.java
+E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\dto\ReminderSentEvent.java
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\dto\TaskResponse.java
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\service\TaskNotFoundException.java
-E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\dto\ReminderLevelUpdateRequest.java
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\repository\GroupSubscriptionRepository.java
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\service\TaskQueryService.java
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\repository\TaskRepository.java
@@ -11,6 +11,7 @@ E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-q
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\controller\TaskController.java
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\aspect\ServiceLoggingAspect.java
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\dto\TaskStatsResponse.java
+E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\event\ReminderEventListener.java
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\annotation\TimedExecution.java
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\entity\Task.java
 E:\Sagar\MSRIT SEM7\MicroServices\Project\Sieve-ms\Sieve-ms\java-services\task-query-service\src\main\java\com\sieve\taskquery\annotation\AuditedService.java
