@@ -1,6 +1,5 @@
 ﻿from workers.text_extractor.graph.state import AgentState
 from workers.text_extractor.core.logger import logger
-from shared.metrics import validation_failures
 
 
 async def critique_extraction(state: AgentState) -> AgentState:
@@ -51,7 +50,6 @@ async def critique_extraction(state: AgentState) -> AgentState:
             state["hitl_reason"] = "missing_deadline"
 
     if state.get("needs_human"):
-        validation_failures.labels(reason=state.get("hitl_reason", "unknown")).inc()
         logger.info(f"Critic flagged for HITL: {state.get('hitl_reason')}", extra={"node": "critic_node"})
     else:
         logger.info("Critic passed extraction", extra={"node": "critic_node"})

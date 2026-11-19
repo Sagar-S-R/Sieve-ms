@@ -78,10 +78,6 @@ apply_configmaps() {
     print_info "Applying ConfigMaps..."
     kubectl apply -f configmap.yaml
     kubectl apply -f postgres/configmap.yaml
-    kubectl apply -f monitoring/prometheus-configmap.yaml
-    kubectl apply -f monitoring/grafana-configmap.yaml
-    kubectl apply -f monitoring/grafana-dashboard-provider.yaml
-    kubectl apply -f monitoring/grafana-dashboards-configmap.yaml
     print_success "ConfigMaps applied"
 }
 
@@ -113,15 +109,6 @@ deploy_services() {
     print_success "Application services deployed"
 }
 
-# Deploy monitoring
-deploy_monitoring() {
-    print_info "Deploying monitoring (Prometheus, Grafana)..."
-    
-    kubectl apply -f monitoring/
-    
-    print_success "Monitoring deployed"
-}
-
 # Show status
 show_status() {
     print_info "Deployment Status:"
@@ -145,17 +132,9 @@ show_access_info() {
     echo "  (Set Telegram webhook to: http://$API_GATEWAY_IP/webhook)"
     echo ""
     
-    # Grafana
-    GRAFANA_IP=$(kubectl get service grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "pending")
-    echo "Grafana: http://$GRAFANA_IP"
-    echo "  Login: admin/admin"
-    echo ""
-    
     # Port-forward commands
     echo "Or use port-forward:"
     echo "  kubectl port-forward service/api-gateway 8000:80"
-    echo "  kubectl port-forward service/grafana 3000:80"
-    echo "  kubectl port-forward service/prometheus 9090:9090"
 }
 
 # Main deployment
@@ -171,7 +150,6 @@ main() {
     apply_configmaps
     deploy_infrastructure
     deploy_services
-    deploy_monitoring
     
     echo ""
     print_success "Deployment completed!"
@@ -184,8 +162,7 @@ main() {
     print_info "Next steps:"
     echo "  1. Wait for LoadBalancer IPs to be assigned"
     echo "  2. Set Telegram webhook to API Gateway URL"
-    echo "  3. Access Grafana to view dashboards"
-    echo "  4. Monitor logs: kubectl logs -f deployment/text-extractor"
+    echo "  3. View logs: kubectl logs -f deployment/text-extractor"
 }
 
 # Run main

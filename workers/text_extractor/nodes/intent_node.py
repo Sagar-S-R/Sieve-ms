@@ -1,7 +1,6 @@
 ﻿from workers.text_extractor.graph.state import AgentState
 from workers.text_extractor.core.llm import llm
 from workers.text_extractor.core.logger import logger
-from shared.metrics import messages_processed
 import json
 import re
 
@@ -114,7 +113,6 @@ intent must be one of: NEW, UPDATE, ANNOUNCEMENT, FORM_DEADLINE, CHITCHAT"""
         logger.info(f"Fallback intent: {intent}", extra={"node": "intent_node"})
 
     state["intent"] = intent
-    messages_processed.labels(intent=intent).inc()
 
     logger.info("Intent Node completed", extra={"node": "intent_node", "intent": intent})
     return state

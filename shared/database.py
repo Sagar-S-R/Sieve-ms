@@ -1,11 +1,8 @@
 import os
-import time
 from datetime import datetime, timezone
 from typing import Optional
 import asyncpg
 import logging
-
-from shared.metrics import db_operation_latency
 
 logger = logging.getLogger(__name__)
 
@@ -138,7 +135,6 @@ async def get_user_subscriptions(user_id: int) -> list:
 
 async def save_task(task_data: dict) -> int:
     """Save a single task. Supports both group tasks and personal tasks."""
-    start = time.time()
     try:
         pool = await get_pool()
         deadline = task_data.get('deadline')
@@ -182,10 +178,6 @@ async def save_task(task_data: dict) -> int:
     except Exception as e:
         logger.error(f"[DB] save_task error: {e}", exc_info=True)
         raise
-    finally:
-        db_operation_latency.labels(operation="save_task").observe(time.time() - start)
-
-
 async def save_tasks_atomic(subscribers: list, group_id: int, message_sender_id: int,
                             title: str, action_required: str, deadline) -> list:
     """Save tasks for all subscribers atomically in a single transaction (Media Extractor)."""
@@ -225,7 +217,6 @@ async def update_task_by_id(task_id: int, new_deadline=None, new_location: str =
     if isinstance(new_deadline, str):
         new_deadline = datetime.fromisoformat(new_deadline.replace('Z', '+00:00'))
 
-    start = time.time()
     try:
         pool = await get_pool()
         async with pool.acquire() as conn:
@@ -241,10 +232,6 @@ async def update_task_by_id(task_id: int, new_deadline=None, new_location: str =
     except Exception as e:
         logger.error(f"[DB] update_task_by_id error: {e}", exc_info=True)
         return False
-    finally:
-        db_operation_latency.labels(operation="update_task_by_id").observe(time.time() - start)
-
-
 async def update_task_deadline(task_id: int, user_id: int, new_deadline, group_id: int) -> bool:
     """Update task deadline with ownership check (API Gateway)."""
     from shared.redis_client import invalidate_recent_tasks_cache_async
@@ -299,7 +286,6 @@ async def fetch_recent_tasks(group_id: int, limit: int = 10, excluded_task_ids: 
         if cached is not None:
             return cached
 
-    start = time.time()
     try:
         pool = await get_pool()
         async with pool.acquire() as conn:
@@ -327,10 +313,6 @@ async def fetch_recent_tasks(group_id: int, limit: int = 10, excluded_task_ids: 
     except Exception as e:
         logger.error(f"[DB] fetch_recent_tasks error: {e}", exc_info=True)
         return []
-    finally:
-        db_operation_latency.labels(operation="fetch_recent_tasks").observe(time.time() - start)
-
-
 async def get_task_by_id(task_id: int) -> Optional[dict]:
     pool = await get_pool()
     query = "SELECT id, user_id, group_id, title, action_required, deadline, created_at FROM tasks WHERE id = $1"
@@ -365,7 +347,6 @@ async def get_user_tasks(user_id: int) -> dict:
 
 async def search_tasks_by_title_fuzzy(group_id: int, search_title: str, limit: int = 5, excluded_task_ids: list = []) -> list:
     """Fuzzy search for tasks by title with exclusion support (Text Extractor)."""
-    start_time = time.time()
     try:
         pool = await get_pool()
         async with pool.acquire() as conn:
@@ -389,10 +370,6 @@ async def search_tasks_by_title_fuzzy(group_id: int, search_title: str, limit: i
     except Exception as e:
         logger.error(f"[DB] Error in fuzzy search: {e}", exc_info=True)
         return []
-    finally:
-        db_operation_latency.labels(operation="search_tasks_by_title_fuzzy").observe(time.time() - start_time)
-
-
 # ============================================================================
 # CRON NOTIFIER OPERATIONS
 # ============================================================================

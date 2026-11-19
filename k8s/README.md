@@ -52,8 +52,6 @@ kubectl create secret generic sieve-secrets \
 ```bash
 kubectl apply -f configmap.yaml
 kubectl apply -f postgres/configmap.yaml
-kubectl apply -f monitoring/prometheus-configmap.yaml
-kubectl apply -f monitoring/grafana-configmap.yaml
 ```
 
 ### 4. Deploy Infrastructure (PostgreSQL, Redis, RabbitMQ)
@@ -78,16 +76,10 @@ kubectl apply -f media-extractor/
 kubectl apply -f cron-notifier/
 ```
 
-### 6. Deploy Monitoring
-```bash
-kubectl apply -f monitoring/
-```
-
-### 7. Verify Deployment
+### 6. Verify Deployment
 ```bash
 kubectl get all
 kubectl get pvc
-kubectl get hpa
 ```
 
 ## Directory Structure
@@ -112,23 +104,12 @@ k8s/
 │   ├── service.yaml                 # API Gateway Service (LoadBalancer)
 │   └── ingress.yaml                 # Ingress for HTTPS
 ├── text-extractor/
-│   ├── deployment.yaml              # Text Extractor Deployment
-│   ├── service.yaml                 # Text Extractor Service
-│   └── hpa.yaml                     # Horizontal Pod Autoscaler
+│   └── deployment.yaml              # Text Extractor Deployment
 ├── media-extractor/
 │   ├── deployment.yaml              # Media Extractor Deployment
 │   └── service.yaml                 # Media Extractor Service
 ├── cron-notifier/
 │   └── cronjob.yaml                 # CronJob for reminders
-├── monitoring/
-│   ├── prometheus-deployment.yaml   # Prometheus Deployment
-│   ├── prometheus-service.yaml      # Prometheus Service
-│   ├── prometheus-configmap.yaml    # Prometheus Config
-│   ├── prometheus-pvc.yaml          # Prometheus Storage
-│   ├── grafana-deployment.yaml      # Grafana Deployment
-│   ├── grafana-service.yaml         # Grafana Service (LoadBalancer)
-│   ├── grafana-configmap.yaml       # Grafana Provisioning
-│   └── grafana-pvc.yaml             # Grafana Storage
 └── README.md                         # This file
 ```
 
@@ -169,23 +150,6 @@ kubectl get service api-gateway
 kubectl port-forward service/api-gateway 8000:80
 ```
 
-### Grafana (External)
-```bash
-# Get LoadBalancer IP
-kubectl get service grafana
-
-# Or use port-forward
-kubectl port-forward service/grafana 3000:80
-# Open http://localhost:3000
-# Login: admin/admin
-```
-
-### Prometheus (Internal)
-```bash
-kubectl port-forward service/prometheus 9090:9090
-# Open http://localhost:9090
-```
-
 ### PostgreSQL (Internal)
 ```bash
 kubectl port-forward statefulset/postgres 5432:5432
@@ -216,8 +180,6 @@ kubectl scale deployment text-extractor --replicas=5
 kubectl scale deployment api-gateway --replicas=3
 ```
 
-### Auto-Scaling (HPA)
-Text extractor has HPA configured (2-10 replicas based on CPU/memory):
 ```bash
 # View HPA status
 kubectl get hpa
@@ -268,18 +230,6 @@ kubectl logs -f text-extractor-xxx
 
 # Previous crashed container
 kubectl logs text-extractor-xxx --previous
-```
-
-### View Metrics
-```bash
-# Node metrics
-kubectl top nodes
-
-# Pod metrics
-kubectl top pods
-
-# Specific pod
-kubectl top pod text-extractor-xxx
 ```
 
 ### View Events

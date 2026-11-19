@@ -22,19 +22,11 @@ spec:
           name: amqp
         - containerPort: 15672
           name: management
-        - containerPort: 15692
-          name: prometheus
         env:
         - name: RABBITMQ_DEFAULT_USER
           value: "guest"
         - name: RABBITMQ_DEFAULT_PASS
           value: "guest"  # TODO: Use secret in production
-        command:
-        - sh
-        - -c
-        - |
-          rabbitmq-plugins enable rabbitmq_prometheus &&
-          rabbitmq-server
         volumeMounts:
         - name: rabbitmq-data
           mountPath: /var/lib/rabbitmq

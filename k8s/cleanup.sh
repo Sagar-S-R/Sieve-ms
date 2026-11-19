@@ -55,13 +55,6 @@ delete_services() {
     print_success "Application services deleted"
 }
 
-# Delete monitoring
-delete_monitoring() {
-    print_info "Deleting monitoring..."
-    kubectl delete -f monitoring/ --ignore-not-found=true
-    print_success "Monitoring deleted"
-}
-
 # Delete infrastructure
 delete_infrastructure() {
     print_info "Deleting infrastructure..."
@@ -113,7 +106,6 @@ main() {
     echo ""
     
     delete_services
-    delete_monitoring
     delete_infrastructure
     delete_configmaps
     delete_secrets

@@ -62,7 +62,6 @@ class TestSettingsValidation:
             settings = Settings()
         
         # Assert: Check defaults
-        assert settings.PROMETHEUS_PORT == 8001
         assert settings.LOG_LEVEL == "INFO"
         assert settings.DB_POOL_MIN_SIZE == 5
         assert settings.DB_POOL_MAX_SIZE == 20
@@ -110,61 +109,6 @@ class TestSettingsValidation:
             with pytest.raises(ValidationError) as exc_info:
                 Settings()
             assert "LOG_LEVEL must be one of" in str(exc_info.value)
-    
-    def test_prometheus_port_validation_valid(self):
-        """Test PROMETHEUS_PORT validation accepts valid port range."""
-        # Arrange
-        env_vars = {
-            "GOOGLE_API_KEY": "test_key",
-            "RABBITMQ_URL": "amqp://test",
-            "REDIS_URL": "redis://test",
-            "DATABASE_URL": "postgresql://test",
-            "TELEGRAM_BOT_TOKEN": "test_token",
-            "PROMETHEUS_PORT": "9090"
-        }
-        
-        # Act
-        with patch.dict(os.environ, env_vars, clear=True):
-            settings = Settings()
-        
-        # Assert
-        assert settings.PROMETHEUS_PORT == 9090
-    
-    def test_prometheus_port_validation_invalid_low(self):
-        """Test PROMETHEUS_PORT validation rejects ports below 1024."""
-        # Arrange
-        env_vars = {
-            "GOOGLE_API_KEY": "test_key",
-            "RABBITMQ_URL": "amqp://test",
-            "REDIS_URL": "redis://test",
-            "DATABASE_URL": "postgresql://test",
-            "TELEGRAM_BOT_TOKEN": "test_token",
-            "PROMETHEUS_PORT": "80"
-        }
-        
-        # Act & Assert
-        with patch.dict(os.environ, env_vars, clear=True):
-            with pytest.raises(ValidationError) as exc_info:
-                Settings()
-            assert "must be between 1024 and 65535" in str(exc_info.value)
-    
-    def test_prometheus_port_validation_invalid_high(self):
-        """Test PROMETHEUS_PORT validation rejects ports above 65535."""
-        # Arrange
-        env_vars = {
-            "GOOGLE_API_KEY": "test_key",
-            "RABBITMQ_URL": "amqp://test",
-            "REDIS_URL": "redis://test",
-            "DATABASE_URL": "postgresql://test",
-            "TELEGRAM_BOT_TOKEN": "test_token",
-            "PROMETHEUS_PORT": "70000"
-        }
-        
-        # Act & Assert
-        with patch.dict(os.environ, env_vars, clear=True):
-            with pytest.raises(ValidationError) as exc_info:
-                Settings()
-            assert "must be between 1024 and 65535" in str(exc_info.value)
     
     def test_connection_pool_defaults(self):
         """Test connection pool configuration has correct defaults."""

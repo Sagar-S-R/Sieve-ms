@@ -2,10 +2,7 @@
 import aio_pika
 import json
 import logging
-import time
-from prometheus_client import start_http_server
 from workers.text_extractor.core.config import settings
-from shared.metrics import workflow_duration
 from workers.text_extractor.graph.workflow import app
 from workers.text_extractor.graph.state import AgentState
 from shared.redis_client import (
@@ -25,8 +22,6 @@ logger = logging.getLogger(__name__)
 
 async def process_message(message: aio_pika.IncomingMessage):
     async with message.process(requeue=False):
-        workflow_start_time = time.time()
-
         try:
             data = json.loads(message.body)
             user_id = data.get("user_id", 0)
@@ -50,8 +45,6 @@ async def process_message(message: aio_pika.IncomingMessage):
 
             else:
                 await handle_new_message(user_id, group_id, data)
-
-            workflow_duration.observe(time.time() - workflow_start_time)
 
         except Exception as e:
             logger.error(f"[x] Error processing message: {e}", exc_info=True)
@@ -245,9 +238,6 @@ async def handle_result(result: dict, saved_state: dict, is_group_hitl: bool):
 
 
 async def main():
-    start_http_server(getattr(settings, 'PROMETHEUS_PORT', 8001))
-    logger.info("[OK] Prometheus metrics exposed")
-
     await init_pool()
     logger.info("[OK] DB connection pool initialized")
 

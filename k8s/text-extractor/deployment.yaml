@@ -24,9 +24,6 @@ spec:
       - name: text-extractor
         image: sieve/text-extractor:latest  # TODO: Replace with your registry
         imagePullPolicy: Always
-        ports:
-        - containerPort: 8001
-          name: metrics
         env:
         - name: GROQ_API_KEY
           valueFrom:
@@ -53,11 +50,6 @@ spec:
             configMapKeyRef:
               name: sieve-config
               key: DATABASE_URL
-        - name: PROMETHEUS_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: sieve-config
-              key: PROMETHEUS_PORT
         - name: LOG_LEVEL
           valueFrom:
             configMapKeyRef:
@@ -70,19 +62,3 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /metrics
-            port: 8001
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /metrics
-            port: 8001
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 2
