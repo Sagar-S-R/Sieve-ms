@@ -1,0 +1,16 @@
+com\sieve\reminder\controller\ReminderController.class
+com\sieve\reminder\aspect\ServiceLoggingAspect.class
+com\sieve\reminder\strategy\ReminderStrategyRegistry.class
+com\sieve\reminder\strategy\ReminderDecision.class
+com\sieve\reminder\client\TelegramClient.class
+com\sieve\reminder\dto\ReminderCandidateResponse.class
+com\sieve\reminder\strategy\ReminderStrategy.class
+com\sieve\reminder\annotation\ReminderStrategyType.class
+com\sieve\reminder\service\ReminderService.class
+com\sieve\reminder\dto\TaskResponse.class
+com\sieve\reminder\annotation\AuditedService.class
+com\sieve\reminder\ReminderServiceApplication.class
+com\sieve\reminder\annotation\TimedExecution.class
+com\sieve\reminder\dto\ReminderLevelUpdateRequest.class
+com\sieve\reminder\strategy\StandardReminderStrategy.class
+com\sieve\reminder\client\TaskQueryClient.class

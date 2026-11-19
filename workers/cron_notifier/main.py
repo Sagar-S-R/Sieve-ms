@@ -1,0 +1,62 @@
+import asyncio
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from workers.cron_notifier.jobs.reminder_sweep import sweep_and_notify
+from shared.database import init_pool, close_pool
+from workers.cron_notifier.core.logger import logger
+
+
+async def job_wrapper():
+    """Wrapper to ensure async function runs properly in scheduler."""
+    try:
+        await sweep_and_notify()
+    except Exception as e:
+        logger.error(f" Job execution failed: {e}", exc_info=True)
+
+
+async def main():
+    """
+    Main entry point for cron_notifier.
+    
+    Initializes the database pool and starts the scheduler
+    to run reminder sweeps every 60 seconds.
+    """
+    logger.info(" Starting cron_notifier...")
+    
+    # Initialize database connection pool
+    await init_pool()
+    logger.info("✓ Database pool initialized")
+    
+    # Create scheduler
+    scheduler = AsyncIOScheduler()
+    
+    # Add job to run every 60 seconds
+    scheduler.add_job(
+        job_wrapper,
+        trigger='interval',
+        seconds=60,
+        id='reminder_sweep',
+        name='Reminder Sweep Job',
+        replace_existing=True
+    )
+    
+    # Start scheduler
+    scheduler.start()
+    logger.info("✓ Scheduler started (running every 60 seconds)")
+    
+    # Run once immediately on startup
+    logger.info(" Running initial sweep...")
+    await job_wrapper()
+    
+    try:
+        # Keep the event loop running
+        while True:
+            await asyncio.sleep(1)
+    except (KeyboardInterrupt, SystemExit):
+        logger.info(" Shutting down...")
+        scheduler.shutdown()
+        await close_pool()
+        logger.info("✓ Shutdown complete")
+
+
+if __name__ == '__main__':
+    asyncio.run(main())

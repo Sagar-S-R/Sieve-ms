@@ -1,0 +1,20 @@
+# Core dependencies
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# LangGraph and AI
+langgraph==0.0.20
+langchain==0.1.0
+langchain-google-genai==0.0.5
+google-generativeai==0.3.2
+
+# Message queue and caching
+aio-pika==9.4.1
+redis==5.0.1
+
+# File handling
+httpx==0.25.2
+PyMuPDF==1.23.8
+
+# Utilities
+python-dotenv==1.0.0

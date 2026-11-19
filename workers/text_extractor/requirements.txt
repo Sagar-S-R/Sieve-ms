@@ -1,0 +1,28 @@
+# Async message queue
+aio_pika==9.4.0
+
+# AI / LangGraph
+langgraph>=0.1.0
+langchain>=0.1.0
+langchain-core>=0.1.0
+langchain-groq>=0.1.0
+langsmith
+
+# Database
+asyncpg==0.29.0
+
+# Cache / queue
+redis==5.0.1
+
+# Schema validation
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Monitoring
+prometheus-client==0.19.0
+
+# HTTP
+httpx==0.25.2
+
+# Utilities
+python-dotenv==1.0.0
